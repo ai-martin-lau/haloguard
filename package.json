@@ -1,0 +1,13 @@
+{
+  "name": "haloguard",
+  "version": "0.1.0",
+  "description": "Offline watcher for AI coding agent config (~/.claude, ~/.codex, CLAUDE.md, AGENTS.md, .mcp.json): snapshots, masked diffs, new MCP servers/hooks/plugins, widened permissions, plus an opt-in Claude Code guard hook.",
+  "bin": { "haloguard": "bin/haloguard.js" },
+  "main": "src/core.js",
+  "files": ["bin", "src", "README.md", "README.zh-CN.md", "LICENSE"],
+  "scripts": { "test": "node --test test/*.test.js" },
+  "engines": { "node": ">=18" },
+  "keywords": ["claude-code", "codex", "mcp", "security", "config", "hooks", "agents-md", "claude-md"],
+  "repository": { "type": "git", "url": "https://github.com/ai-martin-lau/haloguard.git" },
+  "license": "MIT"
+}
