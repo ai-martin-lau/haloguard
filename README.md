@@ -8,7 +8,7 @@ Tools and installers can quietly add hooks, MCP servers and plugins to `~/.claud
 `haloguard` takes snapshots of that config and tells you, in plain facts, what changed: which file, which line, when.
 
 - **Fully offline.** No network calls, no telemetry, no auto-update. Zero dependencies — read the ~600 lines yourself.
-- **Never shows your secrets.** Values that look like API keys, tokens, passwords or bearer headers are masked *before* anything is stored or printed. Credential files (`.credentials.json`, `auth.json`, `.env`) are never opened.
+- **Common patterns are redacted best-effort.** Before text is stored or printed, haloguard masks some common shapes: assignments whose names look like keys, tokens, passwords, secrets, cookies, or sessions; a few well-known token prefixes (such as `sk-`, `ghp_`, `AKIA`) and long hex or base64-like strings; `Bearer` and `Basic` headers; URL userinfo; and query parameters whose names look like secrets. Anything that does not match is left as written. Review the output before you share it. This is not a secret scanner and does not replace one. Files named `.credentials.json`, `credentials.json`, `auth.json`, or `.env`, and files ending in `.pem`, `.key`, or `.p12`, are not opened.
 - **Reports facts, not verdicts.** It tells you "a new MCP server `foo` runs `npx -y foo-mcp`", not whether that is good or bad. You decide.
 - **No rollback.** It shows changes; it doesn't rewrite your config. (Want history? `git init` in `~/.claude` works great alongside it.)
 
@@ -25,7 +25,7 @@ Requires Node.js 18+.
 ## Usage
 
 ```bash
-haloguard snapshot                 # save a (masked) snapshot to ~/.haloguard/snapshots
+haloguard snapshot                 # save a best-effort masked snapshot to ~/.haloguard/snapshots
 haloguard snapshot -p .            # also watch this project's CLAUDE.md, AGENTS.md, .mcp.json, .claude/settings*.json
 haloguard status                   # what changed since the last snapshot?
 haloguard diff                     # compare the last two snapshots
@@ -91,7 +91,7 @@ It's a seatbelt, not a sandbox: it matches command text and can be bypassed.
 
 ## Privacy
 
-Snapshots live in `~/.haloguard/snapshots` (mode 600) and contain only masked text. Delete that folder any time.
+Snapshots live in `~/.haloguard/snapshots` (mode 600). Stored text has been through the same best-effort masking and can still contain secrets the patterns missed. Review it before sharing. Delete that folder any time.
 
 ## Development
 

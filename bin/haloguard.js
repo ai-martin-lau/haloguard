@@ -9,10 +9,10 @@ const { check } = require('../src/guard-hook');
 const pkg = require('../package.json');
 
 const HELP = `haloguard ${pkg.version} - watch your AI coding agent config (~/.claude, ~/.codex) for changes.
-Fully offline. Secret-looking values are masked before anything is stored or printed.
+Fully offline. Common secret patterns are masked best-effort before text is stored or printed. Review output before sharing; this is not a secret scanner.
 
 Usage:
-  haloguard snapshot [-p DIR...]     Save a snapshot (masked) to ~/.haloguard/snapshots
+  haloguard snapshot [-p DIR...]     Save a best-effort masked snapshot to ~/.haloguard/snapshots
   haloguard status   [-p DIR...]     Compare current config with the latest snapshot
   haloguard diff [A] [B]             Compare two snapshots (default: the last two)
   haloguard list                     List snapshots
