@@ -7,7 +7,7 @@
 各种工具和安装脚本可能悄悄往 `~/.claude`、`~/.codex` 里加 hook、MCP 服务器和插件。`haloguard` 给这些配置拍快照，用事实告诉你改了什么：哪个文件、哪一行、什么时候。
 
 - **完全离线。** 不联网、不上报、不自动更新。零依赖，大约 600 行代码，可以自己读完。
-- **不显示你的密钥。** 看起来像 API key、token、密码、Bearer 头的值，在保存或打印之前就会被替换成 `***`。凭据文件（`.credentials.json`、`auth.json`、`.env`）根本不会打开。
+- **常见模式会尽力脱敏。** 在保存或打印之前，haloguard 会遮住一部分常见形态：名称像 key、token、密码、secret、cookie、session 的赋值；少量知名令牌前缀（如 `sk-`、`ghp_`、`AKIA`）以及较长的十六进制或类 Base64 字符串；`Bearer` / `Basic` 头；URL 里的用户名和密码；名称像密钥的查询参数。对不上这些模式的内容会原样留下。分享输出前请自己检查。这不是密钥扫描，也不能代替密钥扫描。名为 `.credentials.json`、`credentials.json`、`auth.json`、`.env` 的文件，以及以 `.pem`、`.key`、`.p12` 结尾的文件，不会被打开。
 - **只说事实，不下结论。** 它会告诉你「新增了 MCP 服务器 `foo`，运行 `npx -y foo-mcp`」，不会替你判断好坏。
 - **没有回滚。** 只展示变化，不改你的配置。想要历史版本，可以在 `~/.claude` 里 `git init`，两者可以一起用。
 
@@ -24,7 +24,7 @@ npm install -g github:ai-martin-lau/haloguard
 ## 用法
 
 ```bash
-haloguard snapshot          # 保存一份（已脱敏的）快照到 ~/.haloguard/snapshots
+haloguard snapshot          # 保存一份尽力脱敏的快照到 ~/.haloguard/snapshots
 haloguard snapshot -p .     # 同时盯当前项目的 CLAUDE.md、AGENTS.md、.mcp.json、.claude/settings*.json
 haloguard status            # 跟上次快照比，改了什么？
 haloguard diff              # 比较最近两次快照
@@ -55,7 +55,7 @@ haloguard hook uninstall        # 只删除 haloguard 自己加的那一条
 
 ## 隐私
 
-快照存在 `~/.haloguard/snapshots`（权限 600），里面只有脱敏后的文本，随时可以删除。
+快照存在 `~/.haloguard/snapshots`（权限 600）。保存的文本经过同一套尽力脱敏，仍可能留下未匹配的密钥。分享前请自行检查。这个目录可以随时删除。
 
 ## 许可证
 

@@ -110,3 +110,37 @@ test('source makes no network calls', () => {
   const src = ['core.js', 'scan.js', 'facts.js', 'diff.js', 'drift.js', 'hook.js', 'guard-hook.js', 'mask.js'].map((f) => fs.readFileSync(path.join(__dirname, '..', 'src', f), 'utf8')).join('') + fs.readFileSync(CLI, 'utf8');
   assert.ok(!/require\(['"](https?|net|dgram|tls|dns)['"]\)/.test(src));
 });
+
+test('public docs bound redaction and keep seatbelt and install claims', () => {
+  const root = path.join(__dirname, '..');
+  const en = fs.readFileSync(path.join(root, 'README.md'), 'utf8');
+  const zh = fs.readFileSync(path.join(root, 'README.zh-CN.md'), 'utf8');
+  assert.ok(!en.includes('Never shows your secrets'));
+  assert.ok(!zh.includes('不显示你的密钥'));
+  assert.match(en, /Common patterns are redacted best-effort/);
+  assert.match(en, /Anything that does not match is left as written/);
+  assert.match(en, /Review the output before you share it/);
+  assert.match(en, /This is not a secret scanner and does not replace one/);
+  assert.match(zh, /常见模式会尽力脱敏/);
+  assert.match(zh, /对不上这些模式的内容会原样留下/);
+  assert.match(zh, /分享输出前请自己检查/);
+  assert.match(zh, /这不是密钥扫描，也不能代替密钥扫描/);
+  for (const text of [en, zh]) {
+    assert.match(text, /npx github:ai-martin-lau\/haloguard --help/);
+    assert.match(text, /npm install -g github:ai-martin-lau\/haloguard/);
+    assert.ok(!/\bnpx haloguard\b/.test(text));
+    for (const name of ['.credentials.json', 'credentials.json', 'auth.json', '.env', '.pem', '.key', '.p12']) {
+      assert.ok(text.includes(name), name);
+    }
+  }
+  assert.match(en, /It's a seatbelt, not a sandbox: it matches command text and can be bypassed\./);
+  assert.match(zh, /它是安全带不是沙箱：只匹配命令文本，可以被绕过。/);
+  assert.match(en, /can still contain secrets the patterns missed/);
+  assert.match(zh, /仍可能留下未匹配的密钥/);
+  const help = run('--help');
+  assert.strictEqual(help.status, 0);
+  assert.match(help.stdout, /masked best-effort/);
+  assert.match(help.stdout, /not a secret scanner/);
+  assert.match(help.stdout, /Review output before sharing/);
+  assert.ok(!help.stdout.includes('Never shows your secrets'));
+});
