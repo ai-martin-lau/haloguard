@@ -7,8 +7,8 @@ permissions:
   contents: read
 jobs:
   test:
-    # A commit merged from a pull request was already tested on that PR; direct pushes are still tested.
-    if: github.event_name != 'push' || !(contains(github.event.head_commit.message, '(#') || startsWith(github.event.head_commit.message, 'Merge pull request'))
+    # A pull request merged by GitHub (committer web-flow, "(#N)" in the message) was already tested on that PR; direct pushes are still tested.
+    if: github.event_name != 'push' || github.event.head_commit.committer.username != 'web-flow' || !(contains(github.event.head_commit.message, '(#') || startsWith(github.event.head_commit.message, 'Merge pull request'))
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
